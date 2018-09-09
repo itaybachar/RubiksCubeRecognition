@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
+
+<HBox fx:id="h" prefHeight="200.0" prefWidth="220.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="layouts.CustomPopup">
+
+
+    <VBox alignment="BOTTOM_CENTER" prefHeight="300.0" prefWidth="150.0" spacing="20.0" HBox.hgrow="ALWAYS">
+
+        <Rectangle fx:id="colorDisplay" fill="black" height="75.0" width="75.0" HBox.hgrow="ALWAYS" />
+
+        <HBox spacing="10">
+            <Label text="R:" />
+            <TextField fx:id="rText" prefHeight="25.0" prefWidth="39.0" text="255" />
+        </HBox>
+
+        <HBox spacing="10">
+            <Label text="G:" />
+            <TextField fx:id="gText" prefHeight="25.0" prefWidth="39.0" text="255" />
+        </HBox>
+
+        <HBox spacing="10">
+            <Label text="B:" />
+            <TextField fx:id="bText" prefHeight="25.0" prefWidth="39.0" text="255" />
+        </HBox>
+
+        <Button fx:id="cancel" alignment="BOTTOM_CENTER" text="Cancel" VBox.vgrow="ALWAYS" />
+
+      <padding>
+         <Insets bottom="10" top="10.0" />
+      </padding>
+    </VBox>
+
+
+    <VBox alignment="BOTTOM_CENTER" prefHeight="300.0" prefWidth="150.0" spacing="20" HBox.hgrow="ALWAYS">
+        <Label text="Red" />
+        <Slider fx:id="rSlider" max="255"/>
+        <Label text="Green" />
+        <Slider fx:id="gSlider" max="255" blockIncrement="1" snapToTicks="true"/>
+        <Label text="Blue" />
+        <Slider fx:id="bSlider" max="255"/>
+
+        <Button fx:id="ok" alignment="BASELINE_CENTER" text="Ok" VBox.vgrow="ALWAYS" />
+
+        <padding>
+            <Insets bottom="10" top="10.0" />
+        </padding>
+    </VBox>
+
+</HBox>
