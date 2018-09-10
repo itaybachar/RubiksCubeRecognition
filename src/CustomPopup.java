@@ -1,5 +1,3 @@
-package layouts;
-
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.PopupControl;
@@ -68,7 +66,6 @@ public class CustomPopup {
         });
 
         ok.setOnAction(event -> {
-            System.out.println("hi");
             R=tempR;
             G=tempG;
             B=tempB;

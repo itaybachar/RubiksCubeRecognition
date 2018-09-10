@@ -7,7 +7,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
 
-<HBox prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #383838" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="layouts.MainControl">
+<?import javafx.scene.control.Slider?>
+<?import javafx.geometry.Insets?>
+<HBox prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #383838" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainControl">
     <VBox alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
         <ImageView fx:id="raw" fitHeight="150" fitWidth="150" />
         <ImageView fx:id="filtered" fitHeight="150" fitWidth="150" />
@@ -52,8 +54,12 @@
                 </VBox>
             </HBox>
         </VBox>
-
+        <Label text="Threshold" textFill="white"/>
+        <Slider fx:id="threshold"  max="45" HBox.hgrow="ALWAYS"/>
         <ImageView fx:id="found" fitHeight="150" fitWidth="150" />
+        <HBox.margin>
+            <Insets left="10" right="10"/>
+        </HBox.margin>
     </VBox>
 
 </HBox>

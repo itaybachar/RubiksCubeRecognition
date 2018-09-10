@@ -1,12 +1,7 @@
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.stage.Popup;
 import javafx.stage.Stage;
-import layouts.CustomPopup;
-import layouts.MainControl;
 
 public class main  extends Application {
     @Override
@@ -23,4 +18,5 @@ public class main  extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
 }

@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
 
-<HBox fx:id="hbox" prefHeight="200.0" prefWidth="220.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="layouts.CustomPopup"
+<HBox fx:id="hbox" prefHeight="200.0" prefWidth="220.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="CustomPopup"
         style="-fx-border-color: black; -fx-border-width: 3; -fx-border-insets: 0; -fx-background-color: white;">
 
 
