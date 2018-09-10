@@ -27,7 +27,7 @@ public class CustomPopup {
     private int R,G,B,tempR,tempG,tempB;
 
     @FXML
-    HBox h;
+    HBox hbox;
 
     Popup popup;
 
@@ -36,7 +36,6 @@ public class CustomPopup {
     public void initialize(){
         R=B=G=0;
         sliderFilers();
-        h.setStyle("-fx-background-color: #bababa");
         //Bind slider and text
         rText.textProperty().bindBidirectional(rSlider.valueProperty(),NumberFormat.getIntegerInstance());
         gText.textProperty().bindBidirectional(gSlider.valueProperty(),NumberFormat.getIntegerInstance());
@@ -45,12 +44,12 @@ public class CustomPopup {
         //Bind color display
         colorDisplayBind();
 
-        h.setOnMousePressed(event -> {
+        hbox.setOnMousePressed(event -> {
            clickX = event.getSceneX();
            clickY = event.getSceneY();
         });
 
-        h.setOnMouseDragged(event -> {
+        hbox.setOnMouseDragged(event -> {
             popup.setX(event.getScreenX()-clickX);
             popup.setY(event.getScreenY()-clickY);
 
@@ -61,10 +60,11 @@ public class CustomPopup {
             tempR = R;
             tempG = G;
             tempB = B;
-            popup.hide();
             rSlider.setValue(tempR);
             gSlider.setValue(tempG);
             bSlider.setValue(tempB);
+            popup.hide();
+
         });
 
         ok.setOnAction(event -> {
@@ -129,11 +129,17 @@ public class CustomPopup {
     }
 
     public void setColor(Color c){
-
+        R = (int)(c.getRed()*255);
+        G = (int)(c.getGreen()*255);
+        B = (int)(c.getBlue()*255);
+        rSlider.setValue(R);
+        gSlider.setValue(G);
+        bSlider.setValue(B);
+        updateDisplay();
     }
 
     public Color getColor(){
-        return (Color) colorDisplay.getFill();
+        return Color.rgb(R,G,B);
     }
 
 }

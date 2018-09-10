@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
@@ -48,7 +49,33 @@ public class MainControl {
             popupController[i].setPopup(colorChooser[i]);
 
             colorChooser[i].setOnShown(event -> canOpenPopup=false);
-            colorChooser[i].setOnHidden(event -> canOpenPopup=true);
+            int finalI = i;
+            colorChooser[i].setOnHidden(event -> {
+                canOpenPopup=true;
+
+                switch (finalI){
+                    case 0:
+                        redDisplay.setFill(popupController[finalI].getColor());
+                        break;
+                    case 1:
+                        orangeDisplay.setFill(popupController[finalI].getColor());
+                        break;
+                    case 2:
+                        blueDisplay.setFill(popupController[finalI].getColor());
+                        break;
+                    case 3:
+                        greenDisplay.setFill(popupController[finalI].getColor());
+                        break;
+                    case 4:
+                        yellowDisplay.setFill(popupController[finalI].getColor());
+                        break;
+                    case 5:
+                        whiteDisplay.setFill(popupController[finalI].getColor());
+                        break;
+                }
+
+
+            });
         }
 
 
@@ -78,6 +105,13 @@ public class MainControl {
                 colorChooser[5].show(stage);
         });
 
+        //Set colors
+        popupController[0].setColor(Color.RED);
+        popupController[1].setColor(Color.ORANGE);
+        popupController[2].setColor(Color.BLUE);
+        popupController[3].setColor(Color.GREEN);
+        popupController[4].setColor(Color.YELLOW);
+        popupController[5].setColor(Color.WHITE);
     }
 
     public void setStage(Stage stage) {

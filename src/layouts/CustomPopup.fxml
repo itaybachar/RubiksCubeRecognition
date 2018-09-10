@@ -9,12 +9,13 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
 
-<HBox fx:id="h" prefHeight="200.0" prefWidth="220.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="layouts.CustomPopup">
+<HBox fx:id="hbox" prefHeight="200.0" prefWidth="220.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="layouts.CustomPopup"
+        style="-fx-border-color: black; -fx-border-width: 3; -fx-border-insets: 0; -fx-background-color: white;">
 
 
     <VBox alignment="BOTTOM_CENTER" prefHeight="300.0" prefWidth="150.0" spacing="20.0" HBox.hgrow="ALWAYS">
 
-        <Rectangle fx:id="colorDisplay" fill="black" height="75.0" width="75.0" HBox.hgrow="ALWAYS" />
+        <Rectangle fx:id="colorDisplay" fill="black" height="75.0" width="75.0" HBox.hgrow="ALWAYS" style="-fx-stroke: black"/>
 
         <HBox spacing="10">
             <Label text="R:" />
@@ -34,7 +35,7 @@
         <Button fx:id="cancel" alignment="BOTTOM_CENTER" text="Cancel" VBox.vgrow="ALWAYS" />
 
       <padding>
-         <Insets bottom="10" top="10.0" />
+         <Insets bottom="10" top="10.0" left="10" right="10" />
       </padding>
     </VBox>
 
