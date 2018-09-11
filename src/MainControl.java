@@ -54,7 +54,7 @@ public class MainControl {
         cameraT.setDaemon(true);
     }
 
-    private void startCamera() {
+    private synchronized void startCamera() {
         if (!cameraActive) {
             //Open Capture
             capture.open(cameraID);
@@ -67,9 +67,14 @@ public class MainControl {
                 cameraT.start();
             }
         } else {
-            startButton.setText("Start Camera");
-            cameraActive = false;
+           stopCamera();
         }
+    }
+
+    private void stopCamera(){
+        startButton.setText("Start Camera");
+        cameraActive = false;
+        capture.release();
     }
 
     private void doCamera() {
@@ -77,6 +82,9 @@ public class MainControl {
         capture.read(frame);
         rawMat = frame;
         filteredMat = imageProc.filterImage(rawMat);
+
+        imageProc.drawBounds(rawMat);
+
 
         raw.setImage(imageProc.matToImage(rawMat));
         filtered.setImage(imageProc.matToImage(filteredMat));
@@ -109,27 +117,27 @@ public class MainControl {
                 switch (finalI){
                     case 0:
                         redDisplay.setFill(popupController[finalI].getColor());
-                        imageProc.setColor(1,r,g,b);
+                        imageProc.setRubiksColor(1,r,g,b);
                         break;
                     case 1:
                         orangeDisplay.setFill(popupController[finalI].getColor());
-                        imageProc.setColor(4,r,g,b);
+                        imageProc.setRubiksColor(4,r,g,b);
                         break;
                     case 2:
                         blueDisplay.setFill(popupController[finalI].getColor());
-                        imageProc.setColor(3,r,g,b);
+                        imageProc.setRubiksColor(3,r,g,b);
                         break;
                     case 3:
                         greenDisplay.setFill(popupController[finalI].getColor());
-                        imageProc.setColor(2,r,g,b);
+                        imageProc.setRubiksColor(2,r,g,b);
                         break;
                     case 4:
                         yellowDisplay.setFill(popupController[finalI].getColor());
-                        imageProc.setColor(5,r,g,b);
+                        imageProc.setRubiksColor(5,r,g,b);
                         break;
                     case 5:
                         whiteDisplay.setFill(popupController[finalI].getColor());
-                        imageProc.setColor(6,r,g,b);
+                        imageProc.setRubiksColor(6,r,g,b);
                         break;
                 }
             });

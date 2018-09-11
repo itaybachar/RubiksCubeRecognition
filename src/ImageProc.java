@@ -1,18 +1,17 @@
 import javafx.scene.image.Image;
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfByte;
-import org.opencv.core.Scalar;
+import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
 
 import java.io.ByteArrayInputStream;
 
 public class ImageProc {
 
     private int threshold = 0;
-    private int shift = 4;
+    private int shift = 5;
     private int bitsLeft = 8-shift;
     private int[] colors;
+    private Size boundRect = new Size(250,250);
 
 
     private Scalar[] rubikColors = {
@@ -32,10 +31,10 @@ public class ImageProc {
 
     //Filters an Image to reduced colors
     public synchronized Mat filterImage(Mat src){
-        Mat filtered = new Mat(src.size(),CvType.CV_8UC3);
+        Mat filtered = src.clone();
 
-        for(int x = 0; x<src.size().width; x++){
-            for(int y = 0; y<src.size().height; y++){
+        for(int x = (int) (src.width()/2 - boundRect.width/2); x<src.size().width/2+boundRect.width/2; x++){
+            for(int y = (int) (src.height()/2 - boundRect.width/2); y<src.size().height/2+boundRect.height/2; y++){
                 double[] bgr = src.get(y,x);
 
                 int index = bgrToInt(bgr);
@@ -77,6 +76,10 @@ public class ImageProc {
     //Fills the array of reduced color spectrum.
     private synchronized void fillValues(){
         System.out.println(threshold);
+        //Clear Values
+        for(int i =0; i< Math.pow(2,bitsLeft*3);i++)
+            colors[i]=0;
+
         //Cycle through all possible colors
         for(int b = 0; b<Math.pow(2,bitsLeft);b++) {
             for (int g = 0; g < Math.pow(2,bitsLeft); g++) {
@@ -115,7 +118,7 @@ public class ImageProc {
         int g2 = (int)(color.val[1])>>shift;
         int r2 = (int)(color.val[2])>>shift;
 
-        return Math.abs(r1-r2) + Math.abs(g1-g2) + Math.abs(b1-b2);
+        return (int) (Math.pow(r1-r2,2) + Math.pow(g1-g2,2) + Math.pow(b1-b2,2));
     }
 
     //Sets a color to a rubiks color index
@@ -126,13 +129,21 @@ public class ImageProc {
     public synchronized void setThreshold(int threshold){
         if(this.threshold != threshold){
             this.threshold = threshold;
-            colors = new int[(int)Math.pow(2,bitsLeft*3)];
             fillValues();
         }
     }
 
     //Sets color, by index 1-6
-    public void setColor(int index, int r, int g, int b){
+    public void setRubiksColor(int index, int r, int g, int b){
         rubikColors[index] = new Scalar(b,g,r);
+        fillValues();
     }
+
+    public void drawBounds(Mat in){
+        Point tl = new Point(in.width()/2 - boundRect.width/2,in.height()/2 - boundRect.height/2);
+        Point br = new Point(in.width()/2 + boundRect.width/2,in.height()/2 + boundRect.height/2);
+
+        Imgproc.rectangle(in,tl,br,new Scalar(0,0,255),3);
+    }
+
 }
