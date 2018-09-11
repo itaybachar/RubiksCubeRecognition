@@ -9,6 +9,7 @@ import javafx.stage.Popup;
 import javafx.stage.Stage;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.Scalar;
 import org.opencv.videoio.VideoCapture;
 
 import java.io.IOException;
@@ -85,9 +86,16 @@ public class MainControl {
 
         imageProc.drawBounds(rawMat);
 
+        if(foundMat == null) {
+            foundMat = rawMat.clone();
+            foundMat.setTo(new Scalar(45, 45, 45));
+        }
+        imageProc.findCountours(filteredMat,rawMat,foundMat);
+
 
         raw.setImage(imageProc.matToImage(rawMat));
         filtered.setImage(imageProc.matToImage(filteredMat));
+        found.setImage(imageProc.matToImage(foundMat));
     }
 
     private void initializePopups() {

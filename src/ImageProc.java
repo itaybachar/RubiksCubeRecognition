@@ -4,6 +4,8 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ImageProc {
 
@@ -12,7 +14,6 @@ public class ImageProc {
     private int bitsLeft = 8-shift;
     private int[] colors;
     private Size boundRect = new Size(250,250);
-
 
     private Scalar[] rubikColors = {
             new Scalar(0,0,0), //Black
@@ -144,6 +145,74 @@ public class ImageProc {
         Point br = new Point(in.width()/2 + boundRect.width/2,in.height()/2 + boundRect.height/2);
 
         Imgproc.rectangle(in,tl,br,new Scalar(0,0,255),3);
+    }
+
+    public void findCountours(Mat src,Mat dest,Mat found) {
+        ArrayList<Rect> rects = new ArrayList<>();
+        ArrayList<Scalar> colors = new ArrayList<>();
+
+        Mat filtered = new Mat(boundRect, CvType.CV_8UC3);
+
+        for (int x = (int) (src.width() / 2 - boundRect.width / 2); x < src.size().width / 2 + boundRect.width / 2; x++) {
+            for (int y = (int) (src.height() / 2 - boundRect.width / 2); y < src.size().height / 2 + boundRect.height / 2; y++) {
+                filtered.put(y, x, src.get(y, x));
+            }
+        }
+
+        //Remove some noise
+        Imgproc.blur(filtered, filtered, new Size(6, 6));
+
+        //Cycle through all rubiks colors
+        for (int i = 1; i < rubikColors.length; i++) {
+            Mat mask = new Mat();
+
+            Core.inRange(src, rubikColors[i], rubikColors[i], mask);
+
+            ArrayList<MatOfPoint> contours = new ArrayList<>();
+            Mat edges = new Mat();
+            Imgproc.Canny(mask, edges, 100, 300);
+            Imgproc.findContours(edges, contours, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+
+            MatOfPoint2f curve = new MatOfPoint2f();
+            MatOfPoint2f approxCurve = new MatOfPoint2f();
+
+            for (MatOfPoint contour : contours) {
+                Rect rect;
+                curve.fromList(contour.toList());
+                Imgproc.approxPolyDP(curve, approxCurve, Imgproc.arcLength(curve, true) * 0.02, true);
+
+                MatOfPoint points = new MatOfPoint(approxCurve.toArray());
+
+                rect = Imgproc.boundingRect(points);
+                if (Math.abs(1 - (double) rect.height / rect.width) <= 0.3 &&
+                        Math.abs(1 - (double) rect.width / rect.height) <= 0.3 && rect.area()>3000) {
+                    colors.add(rubikColors[i]);
+                    rects.add(rect);
+                    Imgproc.rectangle(dest, rect.tl(), rect.br(), rubikColors[i], 2);
+                }
+            }
+        }
+        if(rects.size() == 9){
+            rectsToCube(src,found,rects,colors);
+        }
+    }
+
+    private void rectsToCube(Mat src, Mat dst, ArrayList<Rect> rects, ArrayList<Scalar> colors){
+       dst.setTo(new Scalar(45,45,45));
+
+        for(int i = 0; i < 3; i++)
+        {
+            for(int j = 0; j<3; j++)
+            {
+                Point tl = new Point(dst.width()/2-boundRect.width/2 +10,dst.height()/2-boundRect.height/2 + 10);
+                Point br = new Point(dst.width()/2+boundRect.width/2+10,dst.height()/2+boundRect.height/2+10);
+                Imgproc.rectangle(dst,tl,br,new Scalar(255,255,255),4);
+            }
+        }
+
+        for(int i = 0; i< rects.size();i++){
+            Imgproc.rectangle(dst,rects.get(i).tl(),rects.get(i).br(),colors.get(i),3);
+        }
     }
 
 }
