@@ -55,6 +55,13 @@ public class ImageProc {
         return (b << bitsLeft*2 | g << bitsLeft | r);
     }
 
+    private int bgrToInt(byte[] color) {
+        int b = (int) (color[0]) >> shift;
+        int g = (int)(color[1]) >> shift;
+        int r = (int)(color[2]) >> shift;
+        return (b << bitsLeft*2 | g << bitsLeft | r);
+    }
+
     //Scalar into Mat friendly array
     private byte[] scalarToArray(Scalar rubikColor) {
         return new byte[] {
@@ -175,28 +182,18 @@ public class ImageProc {
                 rect = Imgproc.boundingRect(points);
                 if (Math.abs(1 - (double) rect.height / rect.width) <= 0.3 &&
                         Math.abs(1 - (double) rect.width / rect.height) <= 0.3 && rect.area()>3000) {
-                    //TODO: Add another check if the rect intersects another one. Then remove the rect that has the smaller area. should give more accurate results
                     colors.add(rubikColors[i]);
                     rects.add(rect);
-                  //  Imgproc.rectangle(dest, rect.tl(), rect.br(), rubikColors[i], 2);
                 }
             }
         }
 
 
-        //[removing intersections
-        for(int i = 0; i<rects.size();i++){
-            for(int j = i+1; j<rects.size(); j++){
-                if(rectIntersection(rects.get(i),rects.get(j))){
-                    System.out.println("Removed: " + i);
-                    rects.remove(i);
-                    break;
-                }
-            }
-        }
+        cleanUpRects(rects);
         found.setTo(new Scalar(45,45,45));
         for(int i = 0; i<rects.size();i++){
-            Imgproc.rectangle(found, rects.get(i).tl(), rects.get(i).br(), rubikColors[0], 3);
+            if(rects.size()==9)
+           Imgproc.rectangle(found, rects.get(i).tl(), rects.get(i).br(), rubikColors[colorForRect(rects.get(i),src)], 3);
         }
 
 
@@ -232,6 +229,52 @@ public class ImageProc {
        if(right-left>0 && bottom-top>0){
            return true;
        } else return false;
+    }
+
+    private void cleanUpRects(ArrayList<Rect> rects){
+        ArrayList<Rect> tempRects = new ArrayList<>();
+        for(int i = 0; i<rects.size(); i++) {
+            boolean bad = false;
+            for (int j = 0; j < rects.size(); j++) {
+                if (i != j) {
+                    if (rectIntersection(rects.get(i), rects.get(j))) {
+                        if (rects.get(i).area() > rects.get(j).area()) {
+                            bad = true;
+                        }
+                    }
+                }
+            }
+            if (!bad) {
+                tempRects.add(rects.get(i));
+            }
+        }
+        rects = tempRects;
+    }
+
+    private int colorForRect(Rect rect, Mat src){
+        int[] colorCount = new int[7];
+            for(int x = rect.x; x<rect.x+rect.width;x++){
+                for(int y= rect.y;y<rect.y+rect.height;y++){
+                    double[] bgr = src.get(y,x);
+                    for(int j = 0; j<7; j++){
+                        if(bgrToInt(scalarToArray(rubikColors[j]))== bgrToInt(bgr)){
+                            colorCount[j]++;
+                            break;
+                        }
+                    }
+                }
+
+        }
+
+        int bestIndex = -1; int best = -100;
+        for(int i =0; i<7;i++){
+            if(colorCount[i]>best){
+                best = colorCount[i];
+                bestIndex=i;
+            }
+        }
+
+        return bestIndex;
     }
 
 }
