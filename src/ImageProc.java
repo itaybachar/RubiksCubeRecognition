@@ -215,4 +215,8 @@ public class ImageProc {
         }
     }
 
+    public boolean rectIntersection(Rect r1, Rect r2){
+        return true;
+    }
+
 }
