@@ -188,12 +188,29 @@ public class ImageProc {
                         Math.abs(1 - (double) rect.width / rect.height) <= 0.3 && rect.area()>3000) {
                     colors.add(rubikColors[i]);
                     rects.add(rect);
-                    Imgproc.rectangle(dest, rect.tl(), rect.br(), rubikColors[i], 2);
+                  //  Imgproc.rectangle(dest, rect.tl(), rect.br(), rubikColors[i], 2);
                 }
             }
         }
+
+        //[removing intersections
+        for(int i = 0; i<rects.size();i++){
+            for(int j = i+1; j<rects.size(); j++){
+                if(rectIntersection(rects.get(i),rects.get(j))){
+                    System.out.println("Removed: " + i);
+                    rects.remove(i);
+                    break;
+                }
+            }
+        }
+        found.setTo(new Scalar(45,45,45));
+        for(int i = 0; i<rects.size();i++){
+            Imgproc.rectangle(found, rects.get(i).tl(), rects.get(i).br(), rubikColors[0], 3);
+        }
+
+
         if(rects.size() == 9){
-            rectsToCube(src,found,rects,colors);
+          //  rectsToCube(src,found,rects,colors);
         }
     }
 
@@ -216,7 +233,14 @@ public class ImageProc {
     }
 
     public boolean rectIntersection(Rect r1, Rect r2){
-        return true;
+       int top = Math.max(r1.y,r2.y);
+       int bottom = Math.min(r1.y+r1.height,r2.y+r2.height);
+       int left = Math.max(r1.x,r2.x);
+       int right = Math.min(r1.x+r1.width,r2.x+r2.width);
+
+       if(right-left>0 && bottom-top>0){
+           return true;
+       } else return false;
     }
 
 }
