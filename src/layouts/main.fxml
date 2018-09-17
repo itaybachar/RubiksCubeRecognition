@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
 
-<?import javafx.scene.control.Slider?>
-<?import javafx.geometry.Insets?>
 <HBox prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #383838" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainControl">
     <VBox alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
         <ImageView fx:id="raw" fitHeight="150" fitWidth="150" />
@@ -20,45 +20,45 @@
         <VBox alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
             <HBox alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
                 <VBox alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
-                    <Label text="Red" textFill="white"/>
+                    <Label text="Red" textFill="white" />
                     <Rectangle fx:id="redDisplay" fill="red" height="25" width="25" />
                 </VBox>
 
                 <VBox alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
-                    <Label text="Orange" textFill="white"/>
+                    <Label text="Orange" textFill="white" />
                     <Rectangle fx:id="orangeDisplay" fill="orange" height="25" width="25" />
                 </VBox>
             </HBox>
 
             <HBox alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
                 <VBox alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
-                    <Label text="Blue" textFill="white"/>
+                    <Label text="Blue" textFill="white" />
                     <Rectangle fx:id="blueDisplay" fill="blue" height="25" width="25" />
                 </VBox>
 
                 <VBox alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
-                    <Label text="Green" textFill="white"/>
+                    <Label text="Green" textFill="white" />
                     <Rectangle fx:id="greenDisplay" fill="green" height="25" width="25" />
                 </VBox>
             </HBox>
 
             <HBox alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
                 <VBox alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
-                    <Label text="Yellow" textFill="white"/>
+                    <Label text="Yellow" textFill="white" />
                     <Rectangle fx:id="yellowDisplay" fill="yellow" height="25" width="25" />
                 </VBox>
 
                 <VBox alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
-                    <Label text="White" textFill="white"/>
+                    <Label text="White" textFill="white" />
                     <Rectangle fx:id="whiteDisplay" fill="white" height="25" width="25" />
                 </VBox>
             </HBox>
         </VBox>
-        <Label text="Threshold" textFill="white"/>
-        <Slider fx:id="threshold"  max="150" HBox.hgrow="ALWAYS"/>
+        <Label text="Threshold" textFill="white" />
+        <Slider fx:id="threshold" max="150" HBox.hgrow="ALWAYS" />
         <ImageView fx:id="found" fitHeight="150" fitWidth="150" />
         <HBox.margin>
-            <Insets left="10" right="10"/>
+            <Insets left="10" right="10" />
         </HBox.margin>
     </VBox>
 

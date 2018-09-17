@@ -17,12 +17,12 @@ public class ImageProc {
 
     private Scalar[] rubikColors = {
             new Scalar(0,0,0), //Black
-            new Scalar(0,0,255), //Red
-            new Scalar(0,240,0), //Green
+            new Scalar(0,0,220), //Red
+            new Scalar(0,195,0), //Green
             new Scalar(255,0,0), //Blue
-            new Scalar(0,90,255), //Orange
-            new Scalar(0,200,200), //Yellow
-            new Scalar(200,200,200) //White
+            new Scalar(0,85,255), //Orange
+            new Scalar(0,210,210), //Yellow
+            new Scalar(255,255,255) //White
     };
 
     public ImageProc(){
@@ -151,23 +151,12 @@ public class ImageProc {
         ArrayList<Rect> rects = new ArrayList<>();
         ArrayList<Scalar> colors = new ArrayList<>();
 
-        Mat filtered = new Mat(boundRect, CvType.CV_8UC3);
-
-        for (int x = (int) (src.width() / 2 - boundRect.width / 2); x < src.size().width / 2 + boundRect.width / 2; x++) {
-            for (int y = (int) (src.height() / 2 - boundRect.width / 2); y < src.size().height / 2 + boundRect.height / 2; y++) {
-                filtered.put(y, x, src.get(y, x));
-            }
-        }
-
-        //Remove some noise
-        Imgproc.blur(filtered, filtered, new Size(6, 6));
-
         //Cycle through all rubiks colors
         for (int i = 1; i < rubikColors.length; i++) {
             Mat mask = new Mat();
 
             Core.inRange(src, rubikColors[i], rubikColors[i], mask);
-
+            Imgproc.blur(mask,mask,new Size(6,6));
             ArrayList<MatOfPoint> contours = new ArrayList<>();
             Mat edges = new Mat();
             Imgproc.Canny(mask, edges, 100, 300);
@@ -186,13 +175,14 @@ public class ImageProc {
                 rect = Imgproc.boundingRect(points);
                 if (Math.abs(1 - (double) rect.height / rect.width) <= 0.3 &&
                         Math.abs(1 - (double) rect.width / rect.height) <= 0.3 && rect.area()>3000) {
+                    //TODO: Add another check if the rect intersects another one. Then remove the rect that has the smaller area. should give more accurate results
                     colors.add(rubikColors[i]);
                     rects.add(rect);
                     Imgproc.rectangle(dest, rect.tl(), rect.br(), rubikColors[i], 2);
                 }
             }
         }
-        if(rects.size() == 9){
+        if(rects.size() >7){
             rectsToCube(src,found,rects,colors);
         }
     }
@@ -214,5 +204,7 @@ public class ImageProc {
             Imgproc.rectangle(dst,rects.get(i).tl(),rects.get(i).br(),colors.get(i),3);
         }
     }
+
+    //Hello world
 
 }

@@ -37,7 +37,9 @@ public class MainControl {
     private boolean cameraActive;
     private int cameraID =0; //-1 gives a device choosing dialog
     private Mat rawMat, filteredMat,foundMat;
-    static Thread cameraT;
+    DaemeonThread daemeonThread;
+
+    //OpenCV Loading
     static{ System.loadLibrary(Core.NATIVE_LIBRARY_NAME); }
 
     public void initialize(){
@@ -47,15 +49,9 @@ public class MainControl {
         capture = new VideoCapture();
         cameraActive = false;
         startButton.setOnAction(event -> startCamera());
-        cameraT = new Thread(()->{
-            while (cameraActive) {
-                doCamera();
-            }
-        });
-        cameraT.setDaemon(true);
     }
 
-    private synchronized void startCamera() {
+    private void startCamera() {
         if (!cameraActive) {
             //Open Capture
             capture.open(cameraID);
@@ -65,7 +61,12 @@ public class MainControl {
                 //Set Button Text and camera boolean
                 startButton.setText("Stop Camera");
                 cameraActive = true;
-                cameraT.start();
+                //cameraT.start();
+                daemeonThread = new DaemeonThread();
+                daemeonThread.runnable = true;
+                Thread t = new Thread(daemeonThread);
+                t.setDaemon(true);
+                t.start();
             }
         } else {
            stopCamera();
@@ -73,9 +74,25 @@ public class MainControl {
     }
 
     private void stopCamera(){
+        daemeonThread.runnable = false;
         startButton.setText("Start Camera");
         cameraActive = false;
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         capture.release();
+        resetImages();
+    }
+
+    private void resetImages(){
+        rawMat.setTo(new Scalar(45,45,45));
+        filteredMat.setTo(new Scalar(45,45,45));
+        foundMat.setTo(new Scalar(45,45,45));
+        raw.setImage(imageProc.matToImage(rawMat));
+        filtered.setImage(imageProc.matToImage(filteredMat));
+        found.setImage(imageProc.matToImage(foundMat));
     }
 
     private void doCamera() {
@@ -91,7 +108,6 @@ public class MainControl {
             foundMat.setTo(new Scalar(45, 45, 45));
         }
         imageProc.findCountours(filteredMat,rawMat,foundMat);
-
 
         raw.setImage(imageProc.matToImage(rawMat));
         filtered.setImage(imageProc.matToImage(filteredMat));
@@ -177,15 +193,38 @@ public class MainControl {
         });
 
         //Set colors
-        popupController[0].setColor(Color.RED);
-        popupController[1].setColor(Color.ORANGE);
-        popupController[2].setColor(Color.BLUE);
-        popupController[3].setColor(Color.GREEN);
-        popupController[4].setColor(Color.YELLOW);
-        popupController[5].setColor(Color.WHITE);
+        popupController[0].setColor(Color.rgb(220,0,0));
+        popupController[1].setColor(Color.rgb(255,85,0));
+        popupController[2].setColor(Color.rgb(0,0,255));
+        popupController[3].setColor(Color.rgb(0,195,0));
+        popupController[4].setColor(Color.rgb(210,210,0));
+        popupController[5].setColor(Color.rgb(255,255,255));
+
     }
 
     public void setStage(Stage stage) {
         this.stage = stage;
     }
+
+    class DaemeonThread implements Runnable{
+        volatile boolean runnable = false;
+
+        @Override
+        public void run() {
+            synchronized (this){
+                while (runnable){
+
+                    if(!runnable){
+                        System.out.println("Waiting");
+                        try {
+                            this.wait();
+                        }catch (Exception e){
+                            System.out.println(e.getMessage());
+                        }
+                    } else doCamera();
+                }
+            }
+        }
+    }
 }
+
