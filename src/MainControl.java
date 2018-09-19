@@ -107,6 +107,7 @@ public class MainControl {
             foundMat = rawMat.clone();
             foundMat.setTo(new Scalar(45, 45, 45));
         }
+
         imageProc.findCountours(filteredMat,rawMat,foundMat);
 
         raw.setImage(imageProc.matToImage(rawMat));

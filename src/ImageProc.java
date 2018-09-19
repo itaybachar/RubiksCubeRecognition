@@ -5,7 +5,6 @@ import org.opencv.imgproc.Imgproc;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
-import java.util.List;
 
 public class ImageProc {
 
@@ -14,6 +13,7 @@ public class ImageProc {
     private int bitsLeft = 8-shift;
     private int[] colors;
     private Size boundRect = new Size(250,250);
+    private MergeSort mergeSort;
 
     private Scalar[] rubikColors = {
             new Scalar(0,0,0), //Black
@@ -27,6 +27,7 @@ public class ImageProc {
 
     public ImageProc(){
         colors = new int[(int)Math.pow(2,bitsLeft*3)];
+        mergeSort = new MergeSort();
         fillValues();
     }
 
@@ -163,7 +164,7 @@ public class ImageProc {
             Mat mask = new Mat();
 
             Core.inRange(src, rubikColors[i], rubikColors[i], mask);
-            Imgproc.blur(mask,mask,new Size(6,6));
+            Imgproc.blur(mask, mask, new Size(6, 6));
             ArrayList<MatOfPoint> contours = new ArrayList<>();
             Mat edges = new Mat();
             Imgproc.Canny(mask, edges, 100, 300);
@@ -181,24 +182,27 @@ public class ImageProc {
 
                 rect = Imgproc.boundingRect(points);
                 if (Math.abs(1 - (double) rect.height / rect.width) <= 0.3 &&
-                        Math.abs(1 - (double) rect.width / rect.height) <= 0.3 && rect.area()>3000) {
+                        Math.abs(1 - (double) rect.width / rect.height) <= 0.3 && rect.area() > 3000) {
                     colors.add(rubikColors[i]);
                     rects.add(rect);
                 }
             }
         }
 
-
         cleanUpRects(rects);
-        found.setTo(new Scalar(45,45,45));
-        for(int i = 0; i<rects.size();i++){
-            if(rects.size()==9)
-           Imgproc.rectangle(found, rects.get(i).tl(), rects.get(i).br(), rubikColors[colorForRect(rects.get(i),src)], 3);
+
+        //Draw Found rectangles on raw image
+        for (int i = 0; i < rects.size(); i++) {
+            Imgproc.rectangle(dest, rects.get(i).tl(), rects.get(i).br(), rubikColors[colorForRect(rects.get(i), src)], 4);
         }
 
-
-        if(rects.size() == 9){
-          //  rectsToCube(src,found,rects,colors);
+        //Draw on found when 9 are reached
+        if (rects.size() == 9) {
+            found.setTo(new Scalar(45, 45, 45));
+            mergeSort.Sort(rects,0,rects.size()-1);
+            for (int i = 0; i < 1; i++) {
+                Imgproc.rectangle(found, rects.get(i).tl(), rects.get(i).br(), rubikColors[colorForRect(rects.get(i), src)], 3);
+            }
         }
     }
 
@@ -231,40 +235,31 @@ public class ImageProc {
        } else return false;
     }
 
-    private void cleanUpRects(ArrayList<Rect> rects){
-        ArrayList<Rect> tempRects = new ArrayList<>();
-        for(int i = 0; i<rects.size(); i++) {
-            boolean bad = false;
-            for (int j = 0; j < rects.size(); j++) {
-                if (i != j) {
-                    if (rectIntersection(rects.get(i), rects.get(j))) {
-                        if (rects.get(i).area() > rects.get(j).area()) {
-                            bad = true;
-                        }
-                    }
+    private void cleanUpRects(ArrayList<Rect> rects) {
+        ArrayList<Rect> tempRects = new ArrayList<>(rects);
+        for (int i = 0; i < tempRects.size(); i++) {
+            for (int j = i + 1; j < tempRects.size(); j++) {
+                if (rectIntersection(tempRects.get(i), tempRects.get(j))) {
+                    rects.remove(tempRects.get(j));
                 }
             }
-            if (!bad) {
-                tempRects.add(rects.get(i));
-            }
         }
-        rects = tempRects;
     }
 
     private int colorForRect(Rect rect, Mat src){
         int[] colorCount = new int[7];
-            for(int x = rect.x; x<rect.x+rect.width;x++){
-                for(int y= rect.y;y<rect.y+rect.height;y++){
-                    double[] bgr = src.get(y,x);
-                    for(int j = 0; j<7; j++){
-                        if(bgrToInt(scalarToArray(rubikColors[j]))== bgrToInt(bgr)){
+            for(int x = rect.x; x<rect.x+rect.width;x++) {
+                for (int y = rect.y; y < rect.y + rect.height; y++) {
+                    double[] bgr = src.get(y, x);
+                    for (int j = 0; j < 7; j++) {
+                        if (rubikColors[j].val[0] == bgr[0] && rubikColors[j].val[1] == bgr[1] && rubikColors[j].val[2] == bgr[2]) {
                             colorCount[j]++;
                             break;
                         }
                     }
                 }
 
-        }
+            }
 
         int bestIndex = -1; int best = -100;
         for(int i =0; i<7;i++){
