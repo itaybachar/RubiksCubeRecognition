@@ -6,6 +6,7 @@ import javafx.stage.Stage;
 public class main  extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
+        //Load
         FXMLLoader loader = new FXMLLoader(getClass().getResource(".\\layouts\\main.fxml"));
 
         Scene scene = new Scene(loader.load());
