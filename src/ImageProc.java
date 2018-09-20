@@ -200,7 +200,7 @@ public class ImageProc {
         if (rects.size() == 9) {
             found.setTo(new Scalar(45, 45, 45));
             mergeSort.Sort(rects,0,rects.size()-1);
-            for (int i = 0; i < 1; i++) {
+            for (int i = 0; i < 9; i++) {
                 Imgproc.rectangle(found, rects.get(i).tl(), rects.get(i).br(), rubikColors[colorForRect(rects.get(i), src)], 3);
             }
         }

@@ -1,11 +1,14 @@
-
 import org.opencv.core.Rect;
-
 import java.util.ArrayList;
-import java.util.HashMap;
+
 
 public class MergeSort {
-    private void merge(int[] arr, int l, int m, int r){
+
+    ArrayList<Rect> R = new ArrayList<>(9);
+    ArrayList<Rect> L = new ArrayList<>(9);
+
+
+    private void merge(ArrayList<Rect> arr, int l, int m, int r,boolean isYSort){
         int i; //index of L array
         int j; //index of R array
         int k; //index of original array
@@ -13,90 +16,74 @@ public class MergeSort {
         int lNum = m-l+1;
         int rNum = r-m;
 
-        int[] L = new int[lNum];
-        int[] R = new int[rNum];
-
         for(i =0; i<lNum;i++){
-            L[i]=arr[l+i];
+            L.add(arr.get(l+i));
         }
 
         for(j=0;j<rNum;j++){
-            R[j]=arr[m+1+j];
+            R.add(arr.get(m+1+j));
         }
 
         i=0;j=0; k=l;
 
-        while(i < lNum && j < rNum ){
-            if(L[i]<=R[j]){
-                arr[k] = L[i];
-                i++;
-            } else{
-                arr[k] = R[j];
-                j++;
+        if(isYSort) {
+            while (i < lNum && j < rNum) {
+                if (L.get(i).y <= R.get(j).y) {
+                    arr.set(k, L.get(i));
+                    i++;
+                } else {
+                    arr.set(k, R.get(j));
+                    j++;
+                }
+                k++;
             }
-            k++;
+        } else {
+            while (i < lNum && j < rNum) {
+                if (L.get(i).x <= R.get(j).x) {
+                    arr.set(k, L.get(i));
+                    i++;
+                } else {
+                    arr.set(k, R.get(j));
+                    j++;
+                }
+                k++;
+            }
         }
 
         while(i<lNum){
-            arr[k] = L[i];
+            arr.set(k,L.get(i));
             i++;
             k++;
         }
 
         while(j<rNum){
-            arr[k] = R[j];
+            arr.set(k,R.get(j));
             j++;
             k++;
         }
+        R.clear();
+        L.clear();
     }
 
-    private void mergeSort(int[] arr, int l, int r){
+    private void mergeSort(ArrayList<Rect> arr, int l, int r,boolean isYSort){
         if(l<r){
             int m = l+(r-l)/2;
 
-            mergeSort(arr,l,m);
-            mergeSort(arr,m+1,r);
+            mergeSort(arr,l,m,isYSort);
+            mergeSort(arr,m+1,r,isYSort);
 
-            merge(arr,l,m,r);
+            merge(arr,l,m,r,isYSort);
         }
     }
 
-    public void Sort(ArrayList<Rect> arr, int l, int r){
-        HashMap<Integer,Integer> yToIndex = new HashMap<>();
-        HashMap<Integer,Integer> xToIndex = new HashMap<>();
+    void Sort(ArrayList<Rect> arr, int l, int r) {
+        //Sort by y
+        mergeSort(arr,l,r,true);
 
-        int[] yVals = new int[arr.size()];
-        int[] xVals = new int[arr.size()];
-
-
-        //Initialize yToIndex
-        for(int i =0; i<arr.size();i++){
-            yVals[i] = arr.get(i).y;
-            yToIndex.put(arr.get(i).y,i);
+        //Sort By x
+        while(l<r){
+            mergeSort(arr,l,l+2,false);
+            l+=3;
         }
-
-        //Sort y values
-        mergeSort(yVals,0,arr.size()-1);
-
-        //Places all rectangles in sorted y order
-        for(int i =0; i<arr.size();i++){
-            arr.add(i,arr.remove(yToIndex.get(yVals[i]).intValue()));
-        }
-/*
-        //Initialize xToIndex
-        for(int i = 0; i < arr.size();i++){
-            xVals[i] = arr.get(i).x;
-            xToIndex.put(arr.get(i).x,i);
-        }
-
-        //Sort x values
-        for(int i = 0; i<arr.size();i+=3){
-            mergeSort(xVals,i,i+2);
-        }
-
-        //Places all rectangles in sorted xy order
-        for(int i =0; i<arr.size();i++){
-            arr.add(i,arr.remove(xToIndex.get(xVals[i]).intValue()));
-        }*/
     }
 }
