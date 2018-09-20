@@ -12,6 +12,7 @@ public class ImageProc {
     private int shift = 5;
     private int bitsLeft = 8-shift;
     private int[] colors;
+    byte[] rectColors;
     private Size boundRect = new Size(250,250);
     private MergeSort mergeSort;
 
@@ -26,6 +27,7 @@ public class ImageProc {
     };
 
     public ImageProc(){
+        rectColors = new byte[9];
         colors = new int[(int)Math.pow(2,bitsLeft*3)];
         mergeSort = new MergeSort();
         fillValues();
@@ -84,7 +86,6 @@ public class ImageProc {
 
     //Fills the array of reduced color spectrum.
     private synchronized void fillValues(){
-        System.out.println(threshold);
         //Clear Values
         for(int i =0; i< Math.pow(2,bitsLeft*3);i++)
             colors[i]=0;
@@ -155,9 +156,8 @@ public class ImageProc {
         Imgproc.rectangle(in,tl,br,new Scalar(0,0,255),3);
     }
 
-    public void findCountours(Mat src,Mat dest,Mat found) {
+    public byte[] findCountours(Mat src, Mat dest, Mat found) {
         ArrayList<Rect> rects = new ArrayList<>();
-        ArrayList<Scalar> colors = new ArrayList<>();
 
         //Cycle through all rubiks colors
         for (int i = 1; i < rubikColors.length; i++) {
@@ -183,7 +183,6 @@ public class ImageProc {
                 rect = Imgproc.boundingRect(points);
                 if (Math.abs(1 - (double) rect.height / rect.width) <= 0.3 &&
                         Math.abs(1 - (double) rect.width / rect.height) <= 0.3 && rect.area() > 3000) {
-                    colors.add(rubikColors[i]);
                     rects.add(rect);
                 }
             }
@@ -201,27 +200,11 @@ public class ImageProc {
             found.setTo(new Scalar(45, 45, 45));
             mergeSort.Sort(rects,0,rects.size()-1);
             for (int i = 0; i < 9; i++) {
-                Imgproc.rectangle(found, rects.get(i).tl(), rects.get(i).br(), rubikColors[colorForRect(rects.get(i), src)], 3);
+                rectColors[i] = colorForRect(rects.get(i),src);
+                Imgproc.rectangle(found, rects.get(i).tl(), rects.get(i).br(), rubikColors[rectColors[i]], 3);
             }
         }
-    }
-
-    private void rectsToCube(Mat src, Mat dst, ArrayList<Rect> rects, ArrayList<Scalar> colors){
-       dst.setTo(new Scalar(45,45,45));
-
-        for(int i = 0; i < 3; i++)
-        {
-            for(int j = 0; j<3; j++)
-            {
-                Point tl = new Point(dst.width()/2-boundRect.width/2 +10,dst.height()/2-boundRect.height/2 + 10);
-                Point br = new Point(dst.width()/2+boundRect.width/2+10,dst.height()/2+boundRect.height/2+10);
-                Imgproc.rectangle(dst,tl,br,new Scalar(255,255,255),4);
-            }
-        }
-
-        for(int i = 0; i< rects.size();i++){
-            Imgproc.rectangle(dst,rects.get(i).tl(),rects.get(i).br(),colors.get(i),3);
-        }
+        return rectColors;
     }
 
     public boolean rectIntersection(Rect r1, Rect r2){
@@ -246,7 +229,7 @@ public class ImageProc {
         }
     }
 
-    private int colorForRect(Rect rect, Mat src){
+    private byte colorForRect(Rect rect, Mat src){
         int[] colorCount = new int[7];
             for(int x = rect.x; x<rect.x+rect.width;x++) {
                 for (int y = rect.y; y < rect.y + rect.height; y++) {
@@ -261,8 +244,8 @@ public class ImageProc {
 
             }
 
-        int bestIndex = -1; int best = -100;
-        for(int i =0; i<7;i++){
+        byte bestIndex = -1; int best = -100;
+        for(byte i =0; i<7;i++){
             if(colorCount[i]>best){
                 best = colorCount[i];
                 bestIndex=i;

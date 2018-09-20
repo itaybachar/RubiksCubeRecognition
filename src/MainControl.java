@@ -1,6 +1,7 @@
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
@@ -24,6 +25,8 @@ public class MainControl {
     private Button startButton;
     @FXML
     private Slider threshold;
+    @FXML
+    private Label thresholdLabel;
 
     //Stage Controls
     private Popup[] colorChooser = new Popup[6];
@@ -45,7 +48,10 @@ public class MainControl {
     public void initialize(){
         initializePopups();
         imageProc = new ImageProc();
-        threshold.valueProperty().addListener((observable, oldValue, newValue) -> imageProc.setThreshold(newValue.intValue()));
+        threshold.valueProperty().addListener((observable, oldValue, newValue) -> {
+            thresholdLabel.setText("Threshold: " + newValue.intValue());
+            imageProc.setThreshold(newValue.intValue());
+        });
         capture = new VideoCapture();
         cameraActive = false;
         startButton.setOnAction(event -> startCamera());
@@ -216,7 +222,6 @@ public class MainControl {
                 while (runnable){
 
                     if(!runnable){
-                        System.out.println("Waiting");
                         try {
                             this.wait();
                         }catch (Exception e){

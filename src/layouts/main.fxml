@@ -54,8 +54,8 @@
                 </VBox>
             </HBox>
         </VBox>
-        <Label text="Threshold" textFill="white" />
-        <Slider fx:id="threshold" max="150" HBox.hgrow="ALWAYS" />
+        <Label fx:id="thresholdLabel" text="Threshold: 0" textFill="white" />
+        <Slider fx:id="threshold" max="40" HBox.hgrow="ALWAYS" />
         <ImageView fx:id="found" fitHeight="150" fitWidth="150" />
         <HBox.margin>
             <Insets left="10" right="10" />
